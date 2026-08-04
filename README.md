@@ -62,7 +62,7 @@ The default scene is shown in the bar at the top of the window.
 |--------|--------|
 | Search field | Filter all scene lists |
 | `×` | Clear search |
-| `⊟` | Toggle compact row layout |
+| Scene icon | Jump to the currently open scene in the list |
 | Refresh | Reload scene lists (`F5`) |
 | Create | Create a new scene |
 

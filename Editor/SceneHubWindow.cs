@@ -61,8 +61,21 @@ namespace HLMLabs.SceneHub.Editor
             EnsureController();
             SceneHubUI.EnsureInitialized();
 
+            if (viewState.FocusCurrentSceneRequested)
+                viewState.SearchFilter = string.Empty;
+
             var activeScene = EditorSceneManager.GetActiveScene();
             var viewModel = controller.BuildViewModel(viewState, activeScene.path, activeScene.isDirty);
+
+            if (viewState.FocusCurrentSceneRequested)
+            {
+                SceneHubGui.PrepareFocusCurrentScene(controller, viewModel, viewState);
+                if (!viewModel.HasCurrentScene)
+                {
+                    viewState.FocusCurrentSceneRequested = false;
+                    viewState.FocusCurrentSceneSectionId = null;
+                }
+            }
 
             SceneHubGui.HandleKeyboardShortcuts(RefreshCatalog, viewState);
 
@@ -72,14 +85,17 @@ namespace HLMLabs.SceneHub.Editor
             SceneHubUI.DrawDefaultSceneBar(viewModel.DefaultScene);
 
             EditorGUILayout.Space(2);
-            SceneHubGui.DrawToolbar(controller, viewState, RefreshCatalog);
+            SceneHubGui.DrawToolbar(controller, viewState, RefreshCatalog, activeScene.path);
             EditorGUILayout.Space(4);
 
             viewState.ScrollPosition = EditorGUILayout.BeginScrollView(viewState.ScrollPosition);
-            SceneHubGui.DrawSections(controller, viewModel);
+            SceneHubGui.DrawSections(controller, viewModel, viewState);
             EditorGUILayout.EndScrollView();
 
             SceneHubUI.EndContentArea();
+
+            if (viewState.HighlightCurrentUntil > EditorApplication.timeSinceStartup)
+                Repaint();
         }
 
         private void RefreshCatalog()

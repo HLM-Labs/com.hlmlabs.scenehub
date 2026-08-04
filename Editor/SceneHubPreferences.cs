@@ -11,7 +11,6 @@ namespace HLMLabs.SceneHub.Editor
         public IReadOnlyList<string> Favorites => favoriteScenes;
         public List<string> RecentScenes { get; } = new();
         public HashSet<string> CollapsedSections { get; } = new();
-        public bool IsCompactView { get; set; }
 
         public string DefaultScene
         {
@@ -32,8 +31,6 @@ namespace HLMLabs.SceneHub.Editor
             RecentScenes.Clear();
             RecentScenes.AddRange(SceneHubUtil.ParsePipeSeparatedList(
                 EditorUserSettings.GetConfigValue(SceneHubConstants.RecentScenesKey)));
-
-            IsCompactView = EditorUserSettings.GetConfigValue(SceneHubConstants.CompactViewKey) == "True";
 
             CollapsedSections.Clear();
             foreach (var section in SceneHubUtil.ParsePipeSeparatedList(
@@ -64,11 +61,6 @@ namespace HLMLabs.SceneHub.Editor
             EditorUserSettings.SetConfigValue(
                 SceneHubConstants.CollapsedSectionsKey,
                 SceneHubUtil.SerializePipeSeparatedList(CollapsedSections));
-        }
-
-        public void SaveCompactView()
-        {
-            EditorUserSettings.SetConfigValue(SceneHubConstants.CompactViewKey, IsCompactView.ToString());
         }
 
         public void ToggleFavorite(string scenePath)

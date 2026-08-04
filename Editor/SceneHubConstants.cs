@@ -17,7 +17,6 @@ namespace HLMLabs.SceneHub.Editor
         public const string LastSceneBeforePlayKey = "SceneHub_LastSceneBeforePlay";
         public const string FavoriteScenesKey = "SceneHub_Favorites";
         public const string RecentScenesKey = "SceneHub_Recent";
-        public const string CompactViewKey = "SceneHub_CompactView";
         public const string CollapsedSectionsKey = "SceneHub_Collapsed";
     }
 }

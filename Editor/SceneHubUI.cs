@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace HLMLabs.SceneHub.Editor
 {
-    /// <summary>
-    /// Compact layout and style helpers for Scene Hub.
-    /// Visual language matches Feature Creator (accent, cards, pro/lite text).
-    /// </summary>
     internal static class SceneHubUI
     {
         private static readonly Color Accent = new Color(0.26f, 0.80f, 0.50f);
@@ -20,16 +16,25 @@ namespace HLMLabs.SceneHub.Editor
         private static readonly Color SeparatorLite = new Color(0f, 0f, 0f, 0.12f);
         private static readonly Color CurrentRowBackgroundPro = new Color(0.26f, 0.80f, 0.50f, 0.18f);
         private static readonly Color CurrentRowBackgroundLite = new Color(0.26f, 0.80f, 0.50f, 0.22f);
+        private static readonly Color CurrentRowHighlightPro = new Color(0.26f, 0.80f, 0.50f, 0.38f);
+        private static readonly Color CurrentRowHighlightLite = new Color(0.26f, 0.80f, 0.50f, 0.42f);
+        private static readonly Color DefaultRowBackgroundPro = new Color(0.95f, 0.72f, 0.18f, 0.20f);
+        private static readonly Color DefaultRowBackgroundLite = new Color(0.95f, 0.72f, 0.18f, 0.26f);
+        private static readonly Color DefaultStrip = new Color(0.95f, 0.72f, 0.18f, 1f);
+        private static readonly Color DefaultBadgeBgPro = new Color(0.95f, 0.72f, 0.18f, 0.28f);
+        private static readonly Color DefaultBadgeBgLite = new Color(0.95f, 0.72f, 0.18f, 0.35f);
+        private static readonly Color DefaultText = new Color(0.95f, 0.78f, 0.28f);
         private static readonly Color EvenRowBackgroundPro = new Color(1f, 1f, 1f, 0.03f);
         private static readonly Color EvenRowBackgroundLite = new Color(0f, 0f, 0f, 0.03f);
         private static readonly Color OddRowBackground = new Color(0f, 0f, 0f, 0f);
         private static readonly Color DefaultBarEmptyPro = new Color(1f, 1f, 1f, 0.04f);
         private static readonly Color DefaultBarEmptyLite = new Color(0f, 0f, 0f, 0.04f);
-        private static readonly Color DefaultBarSetPro = new Color(0.26f, 0.80f, 0.50f, 0.14f);
-        private static readonly Color DefaultBarSetLite = new Color(0.26f, 0.80f, 0.50f, 0.18f);
+        private static readonly Color DefaultBarSetPro = new Color(0.95f, 0.72f, 0.18f, 0.16f);
+        private static readonly Color DefaultBarSetLite = new Color(0.95f, 0.72f, 0.18f, 0.22f);
 
         private const float ContentPadding = 8f;
         private const float DefaultBarHeight = 22f;
+        private const float DefaultStripWidth = 3f;
 
         private static bool _initialized;
         private static GUIStyle _card;
@@ -41,10 +46,10 @@ namespace HLMLabs.SceneHub.Editor
         private static GUIStyle _buildIndexLabel;
         private static GUIStyle _sceneNameNormal;
         private static GUIStyle _sceneNameBold;
-        private static GUIStyle _sceneNameCompactNormal;
-        private static GUIStyle _sceneNameCompactBold;
+        private static GUIStyle _sceneNameDefault;
         private static GUIStyle _defaultStarLabel;
         private static GUIStyle _defaultBarLabel;
+        private static GUIStyle _defaultBadgeLabel;
 
         public static Color Separator => EditorGUIUtility.isProSkin ? SeparatorPro : SeparatorLite;
         public static Color AccentColor => Accent;
@@ -121,28 +126,33 @@ namespace HLMLabs.SceneHub.Editor
                 normal = { textColor = Accent }
             };
 
-            _sceneNameCompactNormal = new GUIStyle(EditorStyles.label)
+            _sceneNameDefault = new GUIStyle(EditorStyles.label)
             {
-                fontSize = 11,
-                normal = { textColor = textColor }
-            };
-
-            _sceneNameCompactBold = new GUIStyle(EditorStyles.label)
-            {
-                fontSize = 11,
+                fontSize = 12,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Accent }
+                normal = { textColor = DefaultText }
             };
 
             _defaultStarLabel = new GUIStyle(EditorStyles.label)
             {
-                normal = { textColor = Accent },
-                fontSize = 12
+                normal = { textColor = DefaultText },
+                fontStyle = FontStyle.Bold,
+                fontSize = 12,
+                alignment = TextAnchor.MiddleCenter
             };
 
             _defaultBarLabel = new GUIStyle(EditorStyles.miniLabel)
             {
                 normal = { textColor = bodyColor }
+            };
+
+            _defaultBadgeLabel = new GUIStyle(EditorStyles.miniLabel)
+            {
+                fontStyle = FontStyle.Bold,
+                fontSize = 9,
+                alignment = TextAnchor.MiddleCenter,
+                padding = new RectOffset(5, 5, 1, 1),
+                normal = { textColor = DefaultText }
             };
         }
 
@@ -204,9 +214,9 @@ namespace HLMLabs.SceneHub.Editor
             }
             else
             {
-                GUILayout.Label("★", _defaultStarLabel ?? EditorStyles.label, GUILayout.Width(14));
+                GUILayout.Label("★", _defaultStarLabel ?? EditorStyles.label, GUILayout.Width(16));
                 EditorGUILayout.LabelField(
-                    "Default: " + SceneHubUtil.GetDisplayName(defaultScene, isDirty: false),
+                    "Default scene: " + SceneHubUtil.GetDisplayName(defaultScene, isDirty: false),
                     _defaultBarLabel ?? EditorStyles.miniLabel);
             }
 
@@ -252,14 +262,12 @@ namespace HLMLabs.SceneHub.Editor
             return !newCollapsed;
         }
 
-        public static GUIStyle GetSceneNameStyle(bool isCurrent, bool isCompact)
+        public static GUIStyle GetSceneNameStyle(bool isCurrent, bool isDefault)
         {
             EnsureInitialized();
 
-            if (isCompact)
-                return isCurrent
-                    ? _sceneNameCompactBold ?? EditorStyles.label
-                    : _sceneNameCompactNormal ?? EditorStyles.label;
+            if (isDefault)
+                return _sceneNameDefault ?? EditorStyles.boldLabel;
 
             return isCurrent
                 ? _sceneNameBold ?? EditorStyles.label
@@ -284,6 +292,15 @@ namespace HLMLabs.SceneHub.Editor
             }
         }
 
+        public static GUIStyle DefaultStarLabel
+        {
+            get
+            {
+                EnsureInitialized();
+                return _defaultStarLabel ?? EditorStyles.boldLabel;
+            }
+        }
+
         public static GUIStyle BuildIndexLabel
         {
             get
@@ -293,9 +310,36 @@ namespace HLMLabs.SceneHub.Editor
             }
         }
 
-        public static Color GetRowColor(bool isCurrentScene, bool isEvenRow)
+        public static void DrawDefaultRowChrome(Rect rowRect)
         {
             bool pro = EditorGUIUtility.isProSkin;
+            EditorGUI.DrawRect(rowRect, pro ? DefaultRowBackgroundPro : DefaultRowBackgroundLite);
+            EditorGUI.DrawRect(new Rect(rowRect.x, rowRect.y, DefaultStripWidth, rowRect.height), DefaultStrip);
+        }
+
+        public static void DrawDefaultBadge()
+        {
+            EnsureInitialized();
+
+            var content = new GUIContent("DEFAULT");
+            var style = _defaultBadgeLabel ?? EditorStyles.miniLabel;
+            var size = style.CalcSize(content);
+            var rect = GUILayoutUtility.GetRect(size.x + 2f, size.y, style, GUILayout.Width(size.x + 2f));
+
+            bool pro = EditorGUIUtility.isProSkin;
+            EditorGUI.DrawRect(rect, pro ? DefaultBadgeBgPro : DefaultBadgeBgLite);
+            GUI.Label(rect, content, style);
+        }
+
+        public static Color GetRowColor(bool isCurrentScene, bool isDefault, bool isEvenRow, bool isHighlighted = false)
+        {
+            bool pro = EditorGUIUtility.isProSkin;
+
+            if (isHighlighted && isCurrentScene)
+                return pro ? CurrentRowHighlightPro : CurrentRowHighlightLite;
+
+            if (isDefault)
+                return pro ? DefaultRowBackgroundPro : DefaultRowBackgroundLite;
 
             if (isCurrentScene)
                 return pro ? CurrentRowBackgroundPro : CurrentRowBackgroundLite;
@@ -304,6 +348,13 @@ namespace HLMLabs.SceneHub.Editor
                 return pro ? EvenRowBackgroundPro : EvenRowBackgroundLite;
 
             return OddRowBackground;
+        }
+
+        public static void DrawCurrentRowHighlight(Rect rowRect)
+        {
+            bool pro = EditorGUIUtility.isProSkin;
+            EditorGUI.DrawRect(rowRect, pro ? CurrentRowHighlightPro : CurrentRowHighlightLite);
+            EditorGUI.DrawRect(new Rect(rowRect.x, rowRect.y, DefaultStripWidth, rowRect.height), Accent);
         }
 
         private static bool AreEditorStylesReady()

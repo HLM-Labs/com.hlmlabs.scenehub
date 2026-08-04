@@ -7,6 +7,9 @@ namespace HLMLabs.SceneHub.Editor
     {
         public string SearchFilter = string.Empty;
         public Vector2 ScrollPosition;
+        public bool FocusCurrentSceneRequested;
+        public string FocusCurrentSceneSectionId;
+        public double HighlightCurrentUntil;
     }
 
     internal readonly struct SceneHubSceneRow
@@ -68,11 +71,28 @@ namespace HLMLabs.SceneHub.Editor
     {
         public string DefaultScene { get; }
         public IReadOnlyList<SceneHubSectionViewModel> Sections { get; }
+        public bool HasCurrentScene { get; }
 
         public SceneHubViewModel(string defaultScene, IReadOnlyList<SceneHubSectionViewModel> sections)
         {
             DefaultScene = defaultScene;
             Sections = sections;
+            HasCurrentScene = ContainsCurrentScene(sections);
+        }
+
+        private static bool ContainsCurrentScene(IReadOnlyList<SceneHubSectionViewModel> sections)
+        {
+            for (var i = 0; i < sections.Count; i++)
+            {
+                var rows = sections[i].Rows;
+                for (var j = 0; j < rows.Count; j++)
+                {
+                    if (rows[j].IsCurrent)
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }
