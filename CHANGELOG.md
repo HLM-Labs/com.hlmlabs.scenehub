@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.3] - 2026-08-04
+- Updated SceneHub window UI style
+
 ## [1.0.2] - 2026-07-09
 - Renamed asmdef to a more used standard.
 

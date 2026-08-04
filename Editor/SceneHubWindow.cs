@@ -59,13 +59,17 @@ namespace HLMLabs.SceneHub.Editor
         private void OnGUI()
         {
             EnsureController();
-            SceneHubResources.EnsureStylesInitialized();
+            SceneHubUI.EnsureInitialized();
 
             var activeScene = EditorSceneManager.GetActiveScene();
             var viewModel = controller.BuildViewModel(viewState, activeScene.path, activeScene.isDirty);
 
             SceneHubGui.HandleKeyboardShortcuts(RefreshCatalog, viewState);
-            SceneHubGui.DrawDefaultSceneBar(viewModel.DefaultScene);
+
+            EditorGUILayout.Space(4f);
+            SceneHubUI.BeginContentArea();
+
+            SceneHubUI.DrawDefaultSceneBar(viewModel.DefaultScene);
 
             EditorGUILayout.Space(2);
             SceneHubGui.DrawToolbar(controller, viewState, RefreshCatalog);
@@ -74,6 +78,8 @@ namespace HLMLabs.SceneHub.Editor
             viewState.ScrollPosition = EditorGUILayout.BeginScrollView(viewState.ScrollPosition);
             SceneHubGui.DrawSections(controller, viewModel);
             EditorGUILayout.EndScrollView();
+
+            SceneHubUI.EndContentArea();
         }
 
         private void RefreshCatalog()

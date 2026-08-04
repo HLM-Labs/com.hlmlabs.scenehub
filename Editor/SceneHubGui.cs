@@ -64,42 +64,15 @@ namespace HLMLabs.SceneHub.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        public static void DrawDefaultSceneBar(string defaultScene)
-        {
-            SceneHubResources.EnsureStylesInitialized();
-
-            var bgColor = string.IsNullOrEmpty(defaultScene)
-                ? SceneHubResources.DefaultBarEmpty
-                : SceneHubResources.DefaultBarSet;
-
-            var rect = EditorGUILayout.BeginHorizontal(GUILayout.Height(20));
-            EditorGUI.DrawRect(rect, bgColor);
-
-            GUILayout.Space(8);
-
-            if (string.IsNullOrEmpty(defaultScene))
-            {
-                EditorGUILayout.LabelField("No default scene set", EditorStyles.miniLabel);
-            }
-            else
-            {
-                GUILayout.Label("★", SceneHubResources.DefaultStarLabel ?? EditorStyles.label, GUILayout.Width(14));
-                EditorGUILayout.LabelField(
-                    "Default: " + SceneHubUtil.GetDisplayName(defaultScene, isDirty: false),
-                    EditorStyles.miniLabel);
-            }
-
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-        }
-
         public static void DrawSections(SceneHubController controller, SceneHubViewModel viewModel)
         {
             for (var i = 0; i < viewModel.Sections.Count; i++)
             {
                 var section = viewModel.Sections[i];
 
-                if (DrawSectionHeader(
+                SceneHubUI.BeginPanel();
+
+                if (SceneHubUI.DrawSectionHeader(
                         controller.Preferences,
                         section.Title,
                         section.Icon,
@@ -107,50 +80,16 @@ namespace HLMLabs.SceneHub.Editor
                         section.Id))
                 {
                     if (section.Rows.Count == 0 && !string.IsNullOrEmpty(section.EmptyMessage))
-                        EditorGUILayout.HelpBox(section.EmptyMessage, MessageType.Info);
+                        SceneHubUI.BodyText(section.EmptyMessage);
                     else
                         DrawSceneRows(controller, section.Rows);
                 }
 
+                SceneHubUI.EndPanel();
+
                 if (i < viewModel.Sections.Count - 1)
-                    EditorGUILayout.Space(8);
+                    EditorGUILayout.Space(4);
             }
-        }
-
-        private static bool DrawSectionHeader(
-            SceneHubPreferences preferences,
-            string title,
-            Texture2D icon,
-            int count,
-            string sectionId)
-        {
-            var isCollapsed = preferences.IsSectionCollapsed(sectionId);
-
-            EditorGUILayout.BeginHorizontal();
-
-            var newCollapsed = !EditorGUILayout.Foldout(!isCollapsed, GUIContent.none, true, EditorStyles.foldout);
-
-            GUILayout.Space(-15);
-
-            if (icon != null)
-                GUILayout.Label(new GUIContent(icon), GUILayout.Width(18), GUILayout.Height(18));
-
-            GUILayout.Label(title, EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            GUILayout.Label($"({count})", EditorStyles.miniLabel);
-
-            EditorGUILayout.EndHorizontal();
-
-            if (newCollapsed != isCollapsed)
-                preferences.ToggleSectionCollapsed(sectionId, newCollapsed);
-
-            if (!newCollapsed)
-            {
-                var lineRect = EditorGUILayout.GetControlRect(false, 1);
-                EditorGUI.DrawRect(lineRect, SceneHubResources.SectionSeparator);
-            }
-
-            return !newCollapsed;
         }
 
         private static void DrawSceneRows(SceneHubController controller, IReadOnlyList<SceneHubSceneRow> rows)
@@ -161,13 +100,13 @@ namespace HLMLabs.SceneHub.Editor
 
         private static void DrawSceneRow(SceneHubController controller, SceneHubSceneRow row, bool isEvenRow)
         {
-            SceneHubResources.EnsureStylesInitialized();
+            SceneHubUI.EnsureInitialized();
 
             var isCompactView = controller.Preferences.IsCompactView;
             var rowHeight = isCompactView ? 20 : 26;
             var rowRect = EditorGUILayout.BeginHorizontal(GUILayout.Height(rowHeight));
 
-            EditorGUI.DrawRect(rowRect, GetRowColor(row.IsCurrent, isEvenRow));
+            EditorGUI.DrawRect(rowRect, SceneHubUI.GetRowColor(row.IsCurrent, isEvenRow));
 
             GUILayout.Space(4);
 
@@ -176,8 +115,8 @@ namespace HLMLabs.SceneHub.Editor
                 if (row.IsCurrent)
                 {
                     var indicatorStyle = row.IsDirty
-                        ? SceneHubResources.DirtyIndicatorLabel ?? EditorStyles.boldLabel
-                        : SceneHubResources.CurrentIndicatorLabel ?? EditorStyles.boldLabel;
+                        ? SceneHubUI.DirtyIndicatorLabel
+                        : SceneHubUI.CurrentIndicatorLabel;
                     var indicator = row.IsDirty ? "●" : "►";
                     GUILayout.Label(indicator, indicatorStyle, GUILayout.Width(14));
                 }
@@ -189,14 +128,14 @@ namespace HLMLabs.SceneHub.Editor
 
             if (row.IsInBuildSettings && row.BuildIndex >= 0)
             {
-                GUILayout.Label($"[{row.BuildIndex}]", SceneHubResources.BuildIndexLabel ?? EditorStyles.miniLabel, GUILayout.Width(24));
+                GUILayout.Label($"[{row.BuildIndex}]", SceneHubUI.BuildIndexLabel, GUILayout.Width(24));
             }
             else if (row.IsInBuildSettings)
             {
                 GUILayout.Space(24);
             }
 
-            var nameStyle = SceneHubResources.GetSceneNameStyle(row.IsCurrent, isCompactView);
+            var nameStyle = SceneHubUI.GetSceneNameStyle(row.IsCurrent, isCompactView);
             var labelRect = GUILayoutUtility.GetRect(new GUIContent(row.DisplayName), nameStyle, GUILayout.MinWidth(80));
 
             if (Event.current.type == EventType.MouseDown &&
@@ -263,14 +202,6 @@ namespace HLMLabs.SceneHub.Editor
                 operations.DeleteScene(row.Path, row.IsCurrent));
 
             menu.ShowAsContext();
-        }
-
-        private static Color GetRowColor(bool isCurrentScene, bool isEvenRow)
-        {
-            if (isCurrentScene)
-                return SceneHubResources.CurrentRowBackground;
-
-            return isEvenRow ? SceneHubResources.EvenRowBackground : SceneHubResources.OddRowBackground;
         }
     }
 }
