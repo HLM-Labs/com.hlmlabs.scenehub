@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.5] - 2026-08-20
+- Moved menu item under "tools" section
+
 ## [1.0.4] - 2026-08-04
 - ContextMenu available on right-click on scene name.
 - Compact view mode was removed.

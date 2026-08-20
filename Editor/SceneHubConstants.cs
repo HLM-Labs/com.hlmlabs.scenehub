@@ -3,7 +3,7 @@ namespace HLMLabs.SceneHub.Editor
     internal static class SceneHubConstants
     {
         public const string WindowTitle = "Scene Hub";
-        public const string MenuPath = "HLM Labs/Scene Hub";
+        public const string MenuPath = "Tools/HLM Labs/Scene Hub";
 
         public const int MaxRecentScenes = 10;
         public const int MaxRecentDisplayed = 5;
