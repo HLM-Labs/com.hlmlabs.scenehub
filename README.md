@@ -2,7 +2,7 @@
 - Inside your Unity project go to Window -> Package Manager
 - At the bottom left corner choose "+"
 - Install package from git URL
-- Paste `https://github.com/Hllib/com.hlmlabs.scenehub.git`  
+- Paste `https://github.com/HLM-Labs/com.hlmlabs.scenehub.git`  
 - Click "Install"
 
 ---
@@ -13,7 +13,7 @@ Scene Hub is an editor window for browsing, opening, and running scenes in your 
 
 ## Opening Scene Hub
 
-**Menu:** `HLM Labs > Scene Hub`
+**Menu:** `Tools > HLM Labs > Scene Hub`
 
 ## Scene lists
 
