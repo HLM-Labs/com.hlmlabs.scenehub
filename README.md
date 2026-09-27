@@ -1,10 +1,16 @@
 # 🔧 Installation
+
+## Option 1. Unity Asset Store
+- Find Scene Hub on Asset Store and add it to your assets.
+- Inside your Unity project go to Window -> Package Manager
+- Select the asset from "My Assets" and install it
+
+## Option 2. Git
 - Inside your Unity project go to Window -> Package Manager
 - At the bottom left corner choose "+"
 - Install package from git URL
-- Paste `https://github.com/HLM-Labs/com.hlmlabs.scenehub.git`  
+- Paste `https://github.com/HLM-Labs/com.hlmlabs.scenehub.git`
 - Click "Install"
-
 ---
 
 # About Scene Hub
